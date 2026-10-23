@@ -1,0 +1,640 @@
+/* ==========================================================================
+   Granny's House - Survival Horror Game Styles
+   ========================================================================== */
+
+:root {
+  --font-horror: 'Creepster', cursive;
+  --font-typewriter: 'Special Elite', serif;
+  --font-pixel: 'VT323', monospace;
+
+  --color-bg: #000000;
+  --color-hud-bg: rgba(2, 1, 0, 0.98);
+  --color-border: rgba(60, 35, 15, 0.5);
+  --color-gold: #c8a040;
+  --color-blood: #8b0000;
+  --color-blood-glow: rgba(139, 0, 0, 0.4);
+  --color-text-main: #c8b090;
+  --color-text-dim: #4a3520;
+}
+
+/* ── Reset & Base Setup ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg);
+  font-family: var(--font-typewriter);
+  color: var(--color-text-main);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+/* ── Title Screen Overlay ── */
+#title {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 1.5s ease;
+}
+
+#title.out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.t-flicker {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 5px;
+  color: #2a1a08;
+  margin-bottom: 32px;
+  animation: flk 3s infinite;
+}
+
+@keyframes flk {
+  0%, 94%, 100% { opacity: 1; }
+  95% { opacity: 0.1; }
+  97% { opacity: 0.8; }
+  98% { opacity: 0.05; }
+}
+
+.t-main {
+  font-family: var(--font-horror);
+  font-size: clamp(60px, 10vw, 110px);
+  color: #b8a080;
+  letter-spacing: 6px;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 0 80px rgba(180, 100, 0, 0.5), 0 0 160px rgba(139, 0, 0, 0.3);
+  animation: tglow 2s ease-in-out infinite;
+}
+
+@keyframes tglow {
+  0%, 100% {
+    text-shadow: 0 0 80px rgba(180, 100, 0, 0.5), 0 0 160px rgba(139, 0, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 100px rgba(220, 130, 0, 0.8), 0 0 200px rgba(180, 0, 0, 0.5), 0 4px 0 rgba(160, 80, 0, 0.6);
+  }
+}
+
+.t-sub {
+  font-family: var(--font-typewriter);
+  font-size: 14px;
+  letter-spacing: 7px;
+  color: #3a2510;
+  margin-top: 10px;
+  margin-bottom: 60px;
+}
+
+.t-story {
+  font-family: var(--font-typewriter);
+  font-size: 13px;
+  color: var(--color-text-dim);
+  letter-spacing: 1px;
+  line-height: 2.4;
+  text-align: center;
+  margin-bottom: 50px;
+  max-width: 480px;
+}
+
+.t-story span {
+  color: #7a5530;
+}
+
+.t-btn {
+  font-family: var(--font-typewriter);
+  font-size: 14px;
+  letter-spacing: 6px;
+  color: #c8a060;
+  background: none;
+  border: 2px solid #4a2a10;
+  padding: 14px 48px;
+  cursor: pointer;
+  transition: all 0.3s;
+  animation: bborder 2s infinite;
+}
+
+@keyframes bborder {
+  0%, 100% {
+    border-color: #4a2a10;
+    box-shadow: none;
+  }
+  50% {
+    border-color: #aa6020;
+    box-shadow: 0 0 20px rgba(180, 100, 30, 0.25);
+  }
+}
+
+.t-btn:hover {
+  border-color: #cc8030;
+  color: #e8c080;
+  background: rgba(180, 100, 30, 0.08);
+}
+
+.t-ctrl {
+  position: absolute;
+  bottom: 20px;
+  font-family: var(--font-typewriter);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #1e1008;
+  text-align: center;
+  line-height: 2.5;
+}
+
+/* ── Main Game Canvas Container ── */
+#game {
+  position: relative;
+  width: 960px;
+  height: 640px;
+  overflow: hidden;
+  box-shadow: 0 0 120px rgba(0, 0, 0, 1);
+  background: #000;
+}
+
+#gc {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 960px;
+  height: 640px;
+  display: block;
+}
+
+/* ── HUD Elements ── */
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 50px;
+  background: linear-gradient(to bottom, var(--color-hud-bg) 60%, transparent);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.hface {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #100808;
+  border: 1.5px solid rgba(160, 100, 40, 0.3);
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.blbl {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #3a2510;
+  width: 28px;
+}
+
+.bbg {
+  width: 80px;
+  height: 4px;
+  background: rgba(30, 18, 8, 0.9);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bfill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s;
+}
+
+#hpBar {
+  background: linear-gradient(90deg, #7a0000, #cc2020);
+}
+
+#stBar {
+  background: linear-gradient(90deg, #1a3060, #3080dd);
+}
+
+.hdiv {
+  width: 1px;
+  height: 28px;
+  background: rgba(60, 35, 15, 0.4);
+}
+
+#dayBadge {
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  color: #6a4020;
+  letter-spacing: 2px;
+}
+
+.hmsg {
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #4a3020;
+  margin-left: auto;
+}
+
+#grannySense {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #4a1010;
+  animation: sense 1s infinite;
+}
+
+@keyframes sense {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── Inventory Bar ── */
+#inv {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: linear-gradient(to top, var(--color-hud-bg) 60%, transparent);
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.inv-slot {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  background: rgba(10, 6, 2, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  position: relative;
+  border-radius: 3px;
+  pointer-events: all;
+}
+
+.inv-slot.has {
+  border-color: rgba(140, 90, 30, 0.7);
+  background: rgba(20, 12, 4, 0.9);
+}
+
+.inv-slot .itip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-typewriter);
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #8a6030;
+  white-space: nowrap;
+  margin-bottom: 3px;
+  display: none;
+}
+
+.inv-slot:hover .itip {
+  display: block;
+}
+
+#invLabel {
+  font-family: var(--font-typewriter);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #2a1808;
+  margin-right: 4px;
+}
+
+.inv-sep {
+  width: 1px;
+  height: 32px;
+  background: rgba(60, 35, 15, 0.3);
+  margin: 0 4px;
+}
+
+/* ── Minimap ── */
+#mm {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  z-index: 50;
+  border: 1px solid rgba(60, 35, 15, 0.4);
+  background: rgba(3, 2, 1, 0.93);
+  padding: 8px;
+  pointer-events: none;
+}
+
+#mmtitle {
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: #2a1808;
+  margin-bottom: 5px;
+}
+
+#mmc {
+  display: block;
+}
+
+/* ── Dialogue / Narrator Popups ── */
+#popup {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: 480px;
+  max-width: 95%;
+  background: rgba(4, 2, 1, 0.97);
+  border: 1px solid rgba(100, 60, 20, 0.5);
+  padding: 14px 20px;
+  display: none;
+  pointer-events: none;
+}
+
+#popup.on {
+  display: block;
+  animation: ppin 0.3s ease;
+}
+
+@keyframes ppin {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+#pwho {
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: #3a2010;
+  margin-bottom: 5px;
+}
+
+#pbody {
+  font-size: 13px;
+  color: var(--color-text-main);
+  line-height: 1.9;
+  letter-spacing: 0.5px;
+}
+
+#pskip {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #2a1808;
+  margin-top: 8px;
+}
+
+/* ── Floating Interaction Prompt ── */
+#prmt {
+  position: absolute;
+  z-index: 55;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--color-gold);
+  background: rgba(4, 2, 1, 0.92);
+  border: 1px solid rgba(120, 80, 20, 0.6);
+  padding: 4px 11px;
+  pointer-events: none;
+  display: none;
+  white-space: nowrap;
+}
+
+#prmt.on {
+  display: block;
+}
+
+/* ── Toast Notifications ── */
+#toast {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+  background: rgba(4, 2, 1, 0.95);
+  border: 1px solid rgba(120, 80, 20, 0.5);
+  padding: 5px 16px;
+  display: none;
+  pointer-events: none;
+}
+
+#toast.on {
+  display: block;
+  animation: tpop 2.5s ease forwards;
+}
+
+@keyframes tpop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── Granny Alert Flash ── */
+#alert {
+  position: absolute;
+  inset: 0;
+  z-index: 58;
+  pointer-events: none;
+  background: rgba(139, 0, 0, 0);
+  transition: background 0.1s;
+}
+
+/* ── Noise, Vignette & Camera Overlays ── */
+#noise {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px;
+  animation: nsh 0.2s steps(4) infinite;
+}
+
+@keyframes nsh {
+  0%   { background-position: 0 0; }
+  25%  { background-position: 44px -22px; }
+  50%  { background-position: -16px 38px; }
+  75%  { background-position: 26px -7px; }
+}
+
+#vig {
+  position: absolute;
+  inset: 0;
+  z-index: 46;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 38%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+#fearTint {
+  position: absolute;
+  inset: 0;
+  z-index: 44;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.5s;
+}
+
+/* ── Screen Transitions ── */
+#trans {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+
+#trans.on {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#transT {
+  font-family: var(--font-horror);
+  font-size: 28px;
+  letter-spacing: 6px;
+  color: #8a6030;
+  opacity: 0;
+  transition: opacity 0.5s 0.2s;
+}
+
+#trans.on #transT {
+  opacity: 1;
+}
+
+/* ── Win & Game Over Screens ── */
+#end {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s;
+  padding: 40px;
+  text-align: center;
+}
+
+#end.on {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.end-icon {
+  font-size: 72px;
+  margin-bottom: 16px;
+}
+
+.end-h {
+  font-family: var(--font-horror);
+  font-size: 58px;
+  letter-spacing: 10px;
+  margin-bottom: 16px;
+}
+
+.end-p {
+  font-family: var(--font-typewriter);
+  font-size: 14px;
+  letter-spacing: 2px;
+  line-height: 2.4;
+  margin-bottom: 32px;
+  max-width: 440px;
+}
+
+.end-stats {
+  font-family: var(--font-typewriter);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.end-btn {
+  font-family: var(--font-typewriter);
+  font-size: 12px;
+  letter-spacing: 5px;
+  background: none;
+  border: 1px solid #3a2010;
+  padding: 12px 34px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.end-btn:hover {
+  border-color: #8a5020;
+  color: #c8a060;
+}
+
+/* ── In-game Controls Reminder ── */
+#hint {
+  position: absolute;
+  bottom: 68px;
+  right: 12px;
+  z-index: 50;
+  pointer-events: none;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #1a1008;
+  line-height: 2.2;
+}
